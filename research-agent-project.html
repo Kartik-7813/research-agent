@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Research Companion</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ibm-blue: #0F62FE;
+      --ibm-blue-hover: #0353E9;
+      --ibm-blue-light: #EBF1FF;
+      --white: #ffffff;
+      --gray-10: #f4f4f4;
+      --gray-20: #e0e0e0;
+      --gray-30: #c6c6c6;
+      --gray-70: #525252;
+      --gray-90: #262626;
+      --gray-100: #161616;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+      --radius: 10px;
+      --radius-sm: 6px;
+      --font: -apple-system, "Segoe UI", system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--gray-100);
+      background: #f0f4ff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--white);
+      border-bottom: 2px solid var(--ibm-blue);
+      padding: 0 2rem;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--ibm-blue);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-icon svg { width: 24px; height: 24px; fill: var(--white); }
+
+    .header-text h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--gray-100);
+      letter-spacing: -0.3px;
+    }
+
+    .header-text p {
+      font-size: 11.5px;
+      color: var(--gray-70);
+      line-height: 1.3;
+      max-width: 420px;
+    }
+
+    .powered-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ibm-blue-light);
+      border: 1px solid rgba(15,98,254,.25);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ibm-blue);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .powered-badge svg { width: 14px; height: 14px; fill: var(--ibm-blue); }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: var(--gray-70);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 14px;
+      background: var(--ibm-blue);
+      border-radius: 2px;
+    }
+
+    /* chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .chip {
+      background: var(--gray-10);
+      border: 1px solid var(--gray-20);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12.5px;
+      color: var(--gray-90);
+      cursor: pointer;
+      transition: background .18s, border-color .18s, color .18s, transform .15s;
+      font-family: var(--font);
+    }
+
+    .chip:hover {
+      background: var(--ibm-blue-light);
+      border-color: rgba(15,98,254,.35);
+      color: var(--ibm-blue);
+      transform: translateY(-1px);
+    }
+
+    /* capabilities */
+    .cap-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+
+    .cap-list li {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: var(--gray-90);
+    }
+
+    .cap-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #dcf5e7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cap-icon svg { width: 13px; height: 13px; }
+
+    /* ── RIGHT CONTENT ── */
+    .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .chat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .chat-card-header {
+      padding: 1.4rem 1.6rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-card-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-100);
+      margin-bottom: 3px;
+    }
+
+    .chat-card-header p {
+      font-size: 13px;
+      color: var(--gray-70);
+      line-height: 1.5;
+    }
+
+    .chat-widget-wrap {
+      padding: 1rem 1.6rem 1.4rem;
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    #root {
+      width: 100%;
+      min-height: 520px;
+      position: relative;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .steps-card { padding: 1.4rem 1.6rem; }
+
+    .steps-card .card-title { margin-bottom: 1.4rem; font-size: 12px; }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      align-items: start;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 0.5rem;
+      position: relative;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--ibm-blue) 0%, var(--gray-20) 100%);
+    }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--ibm-blue);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-label {
+      font-size: 12.5px;
+      color: var(--gray-90);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .step-sub {
+      font-size: 11px;
+      color: var(--gray-70);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 1.1rem 2rem;
+      text-align: center;
+    }
+
+    .footer-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--gray-100);
+      margin-bottom: 2px;
+    }
+
+    .footer-sub {
+      font-size: 12px;
+      color: var(--gray-70);
+    }
+
+    .footer-note {
+      font-size: 11px;
+      color: var(--gray-30);
+      margin-top: 6px;
+    }
+
+    .ibm-footer {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--gray-70);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .ibm-footer svg { width: 40px; height: 16px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header { padding: 0 1rem; height: auto; padding: .75rem 1rem; flex-wrap: wrap; gap: 8px; }
+      .powered-badge { font-size: 10.5px; padding: 5px 10px; }
+      .header-text p { display: none; }
+      main { padding: 1rem; gap: 1rem; }
+      .sidebar { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem 0; }
+      .step:not(:last-child)::after { display: none; }
+      .step:nth-child(1)::after, .step:nth-child(3)::after { display: none; }
+      .chat-widget-wrap { padding: .75rem 1rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ HEADER ══════════════════════════════════ -->
+<header>
+  <div class="header-left">
+    <div class="logo-icon">
+      <!-- Brain / AI icon -->
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 3C8.832 3 3 8.832 3 16s5.832 13 13 13 13-5.832 13-13S23.168 3 16 3zm0 2c6.065 0 11 4.935 11 11S22.065 27 16 27 5 22.065 5 16 9.935 5 16 5zm-1 4v4H9v2h6v4h2v-4h6v-2h-6V9h-2z"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>AI Research Companion</h1>
+      <p>Retrieve research, generate literature reviews, and discover research insights using AI.</p>
+    </div>
+  </div>
+  <div class="powered-badge">
+    <!-- watsonx logo mark -->
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7" fill="none" stroke="#0F62FE" stroke-width="1.5"/>
+      <path d="M5 8l2 2 4-4" fill="none" stroke="#0F62FE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Powered by IBM watsonx Orchestrate
+  </div>
+</header>
+
+<!-- ══════════════════════════════════ MAIN ══════════════════════════════════ -->
+<main>
+
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="sidebar">
+
+    <!-- Example Questions -->
+    <div class="card">
+      <p class="card-title">Example Research Questions</p>
+      <div class="chips">
+        <button class="chip">What is Agentic AI?</button>
+        <button class="chip">Explain ReAct Framework</button>
+        <button class="chip">Compare AutoGen and CrewAI</button>
+        <button class="chip">Summarize RAG</button>
+        <button class="chip">AI Agent Architectures</button>
+        <button class="chip">Multi-Agent Systems</button>
+        <button class="chip">Planning in AI Agents</button>
+        <button class="chip">Tool Calling in LLMs</button>
+      </div>
+    </div>
+
+    <!-- Capabilities -->
+    <div class="card">
+      <p class="card-title">Capabilities</p>
+      <ul class="cap-list">
+        <li>
+          <span class="cap-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8l3.5 3.5L13 4.5" stroke="#1d8a3d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Research Retrieval
+        </li>
+        <li>
+          <span class="cap-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8l3.5 3.5L13 4.5" stroke="#1d8a3d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Literature Review
+        </li>
+        <li>
+          <span class="cap-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8l3.5 3.5L13 4.5" stroke="#1d8a3d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Key Findings
+        </li>
+        <li>
+          <span class="cap-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8l3.5 3.5L13 4.5" stroke="#1d8a3d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Common Themes
+        </li>
+        <li>
+          <span class="cap-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8l3.5 3.5L13 4.5" stroke="#1d8a3d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Future Research
+        </li>
+      </ul>
+    </div>
+
+  </aside>
+
+  <!-- ── RIGHT COLUMN ── -->
+  <div class="right-col">
+
+    <!-- Chat Card -->
+    <div class="chat-card">
+      <div class="chat-card-header">
+        <h2>AI Research Assistant</h2>
+        <p>Ask research-related questions and receive structured insights from the curated research knowledge base.</p>
+      </div>
+      <div class="chat-widget-wrap">
+        <div id="root"></div>
+      </div>
+    </div>
+
+    <!-- How it Works -->
+    <div class="card steps-card">
+      <p class="card-title">How AI Research Companion Works</p>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-label">Search Documents</div>
+          <div class="step-sub">Scans uploaded research papers and documents</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-label">Retrieve Information</div>
+          <div class="step-sub">Retrieves the most relevant passages and sources</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-label">Analyze &amp; Synthesize</div>
+          <div class="step-sub">Analyzes context and synthesizes findings with AI</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-label">Generate Review</div>
+          <div class="step-sub">Produces literature review, key findings, themes &amp; future directions</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══════════════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer>
+  <div class="footer-title">AI Research Companion</div>
+  <div class="footer-sub">Built using IBM watsonx Orchestrate</div>
+  <div class="footer-note">IBM Agentic AI Masterclass Project</div>
+  <div class="ibm-footer">
+    <svg viewBox="0 0 80 32" xmlns="http://www.w3.org/2000/svg" aria-label="IBM">
+      <text y="24" font-size="28" font-family="Arial" font-weight="bold" fill="#0F62FE">IBM</text>
+    </svg>
+    Made with IBM Bob
+  </div>
+</footer>
+
+<!-- ══════════════════════════ IBM watsonx Orchestrate ══════════════════════════ -->
+<script>
+window.wxOConfiguration = {
+  orchestrationID: "3ff15fb9f12344b28702807b37a6c1d6_735aaec2-9b56-435c-b5a5-f208b407deb4",
+  hostURL: "https://au-syd.watson-orchestrate.cloud.ibm.com",
+  rootElementID: "root",
+  deploymentPlatform: "ibmcloud",
+  crn: "crn:v1:bluemix:public:watsonx-orchestrate:au-syd:a/3ff15fb9f12344b28702807b37a6c1d6:735aaec2-9b56-435c-b5a5-f208b407deb4::",
+  chatOptions: {
+    agentId: "5a983920-e2aa-46ff-bbf7-4fc476612013",
+  }
+};
+
+setTimeout(function () {
+  const script = document.createElement('script');
+  script.src = `${window.wxOConfiguration.hostURL}/wxochat/wxoLoader.js?embed=true`;
+
+  script.addEventListener('load', function () {
+    wxoLoader.init();
+  });
+
+  document.head.appendChild(script);
+
+}, 0);
+</script>
+<style>
+  /* Prevent the watsonx widget launcher/overlay from creating blank space above the page */
+  body > *:not(header):not(main):not(footer) {
+    position: fixed !important;
+  }
+  /* Force any widget root-level injected divs to stay within their container */
+  #root > * { position: relative !important; }
+</style>
+
+</body>
+</html>
