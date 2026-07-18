@@ -1,8 +1,8 @@
-# 📚 AI Research Agent
+# 📚 AI Research Companion
 
 ## Overview
 
-AI Research Agent is an intelligent research assistant built using **IBM watsonx Orchestrate**. It helps researchers, students, and professionals quickly retrieve information from a curated research knowledge base and transform it into structured research insights.
+AI Research Companion is an intelligent research assistant built using **IBM watsonx Orchestrate**. It helps researchers, students, and professionals quickly retrieve information from a curated research knowledge base and transform it into structured research insights.
 
 Instead of manually reading multiple research papers and technical documents, users can ask research-related questions and receive concise literature reviews, key findings, common themes, and future research directions through an interactive AI-powered interface.
 
